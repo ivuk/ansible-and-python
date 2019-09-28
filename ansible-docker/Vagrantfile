@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/xenial64"
+
+  config.vm.box_check_update = false
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+    vb.cpus = "2"
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    apt update -q=2
+    apt install -q=2 -y virtualenv python3-pip
+    LC_ALL="en_US.UTF-8" LC_CTYPE="en_US.UTF-8" dpkg-reconfigure locales --frontend=noninteractive
+    if [[ ! -d /root/venv ]]; then
+        virtualenv -p /usr/bin/python3 /root/venv
+        source /root/venv/bin/activate
+        [[ ! -f /vagrant/requirements.txt ]] || pip install -r /vagrant/requirements.txt
+        echo 'source /root/venv/bin/activate' > /root/.bash_aliases
+    fi
+  SHELL
+
+  config.vm.provision "docker", type: "ansible" do |ansible|
+    ansible.playbook = "ansible/docker.yml"
+  end
+end
