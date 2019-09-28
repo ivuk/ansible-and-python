@@ -1,0 +1,8 @@
+$ModLoad imfile
+$InputFileName {{ log_custom_path }}
+$InputFileFacility {{ log_custom_facility }}
+$InputFileStateFile {{ log_custom_state_file }}
+$InputRunFileMonitor
+{% if not log_default %}
+{{ log_custom_facility }}.* @{{ remote_syslog_server_ip }}:{{ remote_syslog_server_port }}
+{% endif %}

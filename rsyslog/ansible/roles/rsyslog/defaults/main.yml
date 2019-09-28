@@ -1,0 +1,9 @@
+---
+send_logs_remote: False
+remote_syslog_server_ip: 127.0.0.1
+remote_syslog_server_port: 514
+log_default: False
+log_custom: False
+log_custom_path: '/srv/log'
+log_custom_facility: 'local3'
+log_custom_state_file: 'customlog1'

@@ -1,0 +1,35 @@
+---
+- name: Install the 'rsyslog' package
+  apt:
+    name: "rsyslog"
+    update_cache: yes
+    cache_valid_time: "1200"
+  become: True
+
+- name: Configure remote logging for default log files
+  template: src=templates/99-remote-logging.conf.j2 dest=/etc/rsyslog.d/99-remote-logging.conf owner=root group=root mode=0644
+  when: send_logs_remote == True and log_default == True
+  become: True
+  notify:
+    - Restart 'rsyslog' service
+
+- name: Remove '99-remote-logging.conf' if needed
+  file: path="/etc/rsyslog.d/99-remote-logging.conf" state=absent
+  become: True
+  when: log_default == False
+  notify:
+    - Restart 'rsyslog' service
+
+- name: Configure remote logging for custom log file
+  template: src=templates/90-log-custom-file.conf.j2 dest=/etc/rsyslog.d/90-log-custom-file.conf owner=root group=root mode=0644
+  when: send_logs_remote == True and log_custom == True
+  become: True
+  notify:
+    - Restart 'rsyslog' service
+
+- name: Remove '90-log-custom-file.conf' if needed
+  file: path="/etc/rsyslog.d/90-log-custom-file.conf" state=absent
+  become: True
+  when: log_custom == False
+  notify:
+    - Restart 'rsyslog' service
