@@ -1,0 +1,20 @@
+---
+- hosts: all
+  gather_facts: False
+
+  pre_tasks:
+    - name: Check if Python binary is present
+      raw: "test -e /usr/bin/python || (apt -q=2 update && apt -q=2 -y install python)"
+      become: True
+    - name: Gather facts
+      setup:
+
+  tasks:
+  - include_role:
+      name: rsyslog
+    vars:
+      send_logs_remote: True
+      log_default: True
+      log_custom: False
+      remote_syslog_server_ip: 127.0.0.1
+      remote_syslog_server_port: 514
